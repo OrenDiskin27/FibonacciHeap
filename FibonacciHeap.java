@@ -5,7 +5,26 @@
  */
 public class FibonacciHeap
 {
+	public HeapNode min;
+	public HeapNode first;
+	public HeapNode last;
+	public int size;
+	public int numMarked;
+	static int SumsLinks;
+	static int SumsCuts;
 
+	
+	public FibonacciHeap(){
+		
+	}
+	public FibonacciHeap(HeapNode x){
+		min = x;
+		first = x;
+		last = x;
+		x.setNext(x);
+		x.setPrev(x);
+	}
+	
    /**
     * public boolean isEmpty()
     *
@@ -14,7 +33,10 @@ public class FibonacciHeap
     */
     public boolean isEmpty()
     {
-    	return false; // should be replaced by student code
+    	if (size == 0) {
+    		return true;
+    	}
+    	return false;
     }
 		
    /**
@@ -27,7 +49,20 @@ public class FibonacciHeap
     */
     public HeapNode insert(int key)
     {    
-    	return new HeapNode(key); // should be replaced by student code
+    	new HeapNode newHeap = HeapNode(key);
+    	
+    	last.prev.setNext(newHeap);
+    	last.next.setPrev(newHeap);
+    	newHeap.setNext(last.getNext);
+    	newHeap.setPrev(last.getPrev);
+    	last = newHeap;
+    	
+    	if (newHeap.getKey() < min.getKey()) {
+    		min = newHeap;
+    	}
+
+    	
+    	return newHeap;
     }
 
    /**
