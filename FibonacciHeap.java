@@ -1,3 +1,7 @@
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * FibonacciHeap
  *
@@ -12,6 +16,7 @@ public class FibonacciHeap
 	public int numMarked;
 	static int SumsLinks;
 	static int SumsCuts;
+	public int numTrees;
 
 	
 	public FibonacciHeap(){
@@ -61,7 +66,6 @@ public class FibonacciHeap
     		min = newHeap;
     	}
 
-    	
     	return newHeap;
     }
 
@@ -73,6 +77,7 @@ public class FibonacciHeap
     */
     public void deleteMin()
     {
+    	
      	return; // should be replaced by student code
      	
     }
@@ -85,7 +90,10 @@ public class FibonacciHeap
     */
     public HeapNode findMin()
     {
-    	return new HeapNode(678);// should be replaced by student code
+    	if (isEmpty()) {
+    		return null;
+    	}
+    	return min;
     } 
     
    /**
@@ -107,7 +115,7 @@ public class FibonacciHeap
     */
     public int size()
     {
-    	return -123; // should be replaced by student code
+    	return size; 
     }
     	
     /**
@@ -119,9 +127,26 @@ public class FibonacciHeap
     */
     public int[] countersRep()
     {
-    	int[] arr = new int[100];
-        return arr; //	 to be replaced by student code
-    }
+    	int[] arr = new int[size];    	
+    	new HeapNode index = first;
+    	
+    	While (index.next != first){	// add to arr[i] +1 if rank = i
+    		arr[index.getRank()] += 1;
+    	}
+    	
+    	arr[index.getRank()] += 1;
+    	
+    	int targetIndex = 0;	// deletes all 0 in arr;											
+    	for( int sourceIndex = 0;  sourceIndex < arr.length;  sourceIndex++ )
+    	{
+    	    if( arr[sourceIndex] != 0 )
+    	    	arr[targetIndex++] = arr[sourceIndex];
+    	}
+    	int[] newArray = new int[targetIndex];
+    	System.arraycopy( arr, 0, newArray, 0, targetIndex );
+    	
+    	return newArray;
+        }
 	
    /**
     * public void delete(HeapNode x)
@@ -143,7 +168,12 @@ public class FibonacciHeap
     */
     public void decreaseKey(HeapNode x, int delta)
     {    
-    	return; // should be replaced by student code
+    	x.setKey(x.getKey() - delta);
+    	if (x.getParent() == null || x.getParent().getKey() < x.getKey()) {
+    		return;
+    	}
+    	cut (x,x.getParent());
+    	return; 
     }
 
    /**
@@ -156,9 +186,11 @@ public class FibonacciHeap
     * plus twice the number of marked nodes in the heap. 
     */
     public int potential() 
-    {    
-    	return -234; // should be replaced by student code
+    {        	
+    	return numTrees +2*numMarked; // if numTrees is hard to maintain we can do 
+    								  // this function in O(n) by going on all the roots
     }
+    
 
    /**
     * public static int totalLinks() 
@@ -170,7 +202,7 @@ public class FibonacciHeap
     */
     public static int totalLinks()
     {    
-    	return -345; // should be replaced by student code
+    	return SumsLinks; // should be replaced by student code
     }
 
    /**
@@ -182,7 +214,7 @@ public class FibonacciHeap
     */
     public static int totalCuts()
     {    
-    	return -456; // should be replaced by student code
+    	return SumsCuts; // should be replaced by student code
     }
 
      /**
