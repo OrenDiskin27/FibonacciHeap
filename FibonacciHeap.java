@@ -9,8 +9,7 @@ import java.util.List;
  */
 public class FibonacciHeap
 {
-	public HeapNode min = new HeapNode(Integer.MAX_VALUE);
-	public HeapNode first;
+	public HeapNode min;
 	public HeapNode last;
 	public int size;
 	public int numMarked;
@@ -24,7 +23,6 @@ public class FibonacciHeap
 	}
 	public FibonacciHeap(HeapNode x){
 		min = x;
-		first = x;
 		last = x;
 		x.setNext(x);
 		x.setPrev(x);
@@ -108,23 +106,38 @@ public class FibonacciHeap
     */
     public void meld (FibonacciHeap heap2) // cheack that heap2 does not contain keys from this heap
     {
-    	size += heap2.size();
-    	last.setNext(heap2.first);
-    	heap2.first.setPrev(last);
-    	first.setPrev(heap2.last);
-    	heap2.last.setNext(first);
-    	
-    	last = heap2.last;
-    	
-    	if (min.getKey() < heap2.min.getKey()) {
-    		return;
+    	if (isEmpty()) {
+    		if (heap2.isEmpty()) { // both are empty
+    			return;
+    		}
+    		else { // heap 2 isnt empty
+    			min = heap2.min;
+    			last = heap2.last;
+    			size = heap2.size();
+    		}
+
     	}
-    	else {
-    		min = heap2.min;
+    	else { 
+    		if (heap2.isEmpty()) { // this isnt empty and heap2 is empty
+    			return;
+    		}
+    		else { // both are not empty;
+    			size += heap2.size();
+    			
+    			last.getNext().setPrev(heap2.last); // fix all pointers for last
+    			heap2.last.getNext().setPrev(last);
+    			last.setNext(heap2.last.getNext());
+    			heap2.last.setNext(last.getNext());
+ 			
+    	    	if (min.getKey() < heap2.min.getKey()) { 
+    	    		return;
+    	    	}
+    	    	else {
+    	    		min = heap2.min;
+    	    	}
+    		}
     	}
-    	
-    	
-    	  return; // should be replaced by student code   		
+    	return;	
     }
 
    /**
@@ -148,9 +161,9 @@ public class FibonacciHeap
     public int[] countersRep()
     {
     	int[] arr = new int[size];    	
-    	HeapNode index = first;
+    	HeapNode index = last.getNext();
     	
-    	while (index.next != first){	// add to arr[i] +1 if rank = i
+    	while (index.next != last.getNext()){	// add to arr[i] +1 if rank = i
     		arr[index.getRank()] += 1;
     	}
     	
@@ -263,6 +276,10 @@ public class FibonacciHeap
        
        x.setParent(null);
 
+   }
+   
+   public void merg() {
+	   
    }
 
     public static class HeapNode{
