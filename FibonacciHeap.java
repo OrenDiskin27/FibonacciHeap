@@ -18,9 +18,6 @@ public class FibonacciHeap
 	public int numTrees;
 
 	
-	public FibonacciHeap(){
-		
-	}
 	public FibonacciHeap(){}
 	public FibonacciHeap(HeapNode x){
 		min = x;
@@ -28,12 +25,12 @@ public class FibonacciHeap
 		x.setNext(x);
 		x.setPrev(x);
 	}
-	
+
    /**
     * public boolean isEmpty()
     *
     * Returns true if and only if the heap is empty.
-    *   
+    *
     */
     public boolean isEmpty()
     {
@@ -42,25 +39,25 @@ public class FibonacciHeap
     	}
     	return false;
     }
-		
+
    /**
     * public HeapNode insert(int key)
     *
     * Creates a node (of type HeapNode) which contains the given key, and inserts it into the heap.
-    * The added key is assumed not to already belong to the heap.  
-    * 
+    * The added key is assumed not to already belong to the heap.
+    *
     * Returns the newly created node.
     */
     public HeapNode insert(int key)
-    {    
+    {
     	HeapNode newHeap = new HeapNode(key);
-    	
+
     	last.prev.setNext(newHeap);
     	last.next.setPrev(newHeap);
     	newHeap.setNext(last.getNext());
     	newHeap.setPrev(last.getPrev());
     	last = newHeap;
-    	
+
     	if (newHeap.getKey() < min.getKey()) {
     		min = newHeap;
     	}
@@ -77,9 +74,9 @@ public class FibonacciHeap
     */
     public void deleteMin()
     {
-    	
+
      	return; // should be replaced by student code
-     	
+
     }
 
    /**
@@ -94,11 +91,11 @@ public class FibonacciHeap
     		return null;
     	}
     	return min;
-    } 
-    
-   
-    
-    
+    }
+
+
+
+
     /**
     * public void meld (FibonacciHeap heap2)
     *
@@ -118,19 +115,19 @@ public class FibonacciHeap
     		}
 
     	}
-    	else { 
+    	else {
     		if (heap2.isEmpty()) { // this isnt empty and heap2 is empty
     			return;
     		}
     		else { // both are not empty;
     			size += heap2.size();
-    			
+
     			last.getNext().setPrev(heap2.last); // fix all pointers for last
     			heap2.last.getNext().setPrev(last);
     			last.setNext(heap2.last.getNext());
     			heap2.last.setNext(last.getNext());
- 			
-    	    	if (min.getKey() < heap2.min.getKey()) { 
+
+    	    	if (min.getKey() < heap2.min.getKey()) {
     	    		return;
     	    	}
     	    	else {
@@ -138,39 +135,39 @@ public class FibonacciHeap
     	    	}
     		}
     	}
-    	return;	
+    	return;
     }
 
    /**
     * public int size()
     *
     * Returns the number of elements in the heap.
-    *   
+    *
     */
     public int size()
     {
-    	return size; 
+    	return size;
     }
-    	
+
     /**
     * public int[] countersRep()
     *
     * Return an array of counters. The i-th entry contains the number of trees of order i in the heap.
     * Note: The size of of the array depends on the maximum order of a tree, and an empty heap returns an empty array.
-    * 
+    *
     */
     public int[] countersRep()
     {
-    	int[] arr = new int[size];    	
+    	int[] arr = new int[size];
     	HeapNode index = last.getNext();
-    	
+
     	while (index.next != last.getNext()){	// add to arr[i] +1 if rank = i
     		arr[index.getRank()] += 1;
     	}
-    	
+
     	arr[index.getRank()] += 1;
-    	
-    	int targetIndex = 0;	// deletes all 0 in arr;											
+
+    	int targetIndex = 0;	// deletes all 0 in arr;
     	for( int sourceIndex = 0;  sourceIndex < arr.length;  sourceIndex++ )
     	{
     	    if( arr[sourceIndex] != 0 )
@@ -178,10 +175,10 @@ public class FibonacciHeap
     	}
     	int[] newArray = new int[targetIndex];
     	System.arraycopy( arr, 0, newArray, 0, targetIndex );
-    	
+
     	return newArray;
         }
-	
+
    /**
     * public void delete(HeapNode x)
     *
@@ -189,15 +186,9 @@ public class FibonacciHeap
 	* It is assumed that x indeed belongs to the heap.
     *
     */
-    public void delete(HeapNode x) 
-    {    
-    	size -= 1;   	    	
-    
-    	cascading_cut(x);
-    	
-    	delete_root(x);
-    	
-    	
+    public void delete(HeapNode x) //remmember to size -= 1; if it works
+    {
+    	return; // should be replaced by student code
     }
 
    /**
@@ -207,33 +198,33 @@ public class FibonacciHeap
     * to reflect this change (for example, the cascading cuts procedure should be applied if needed).
     */
     public void decreaseKey(HeapNode x, int delta)
-    {    
+    {
     	x.setKey(x.getKey() - delta);
     	if (x.getParent() == null || x.getParent().getKey() < x.getKey()) {
     		return;
     	}
-    	cut(x);
-    	return; 
+    	cut (x,x.getParent());
+    	return;
     }
 
    /**
-    * public int potential() 
+    * public int potential()
     *
     * This function returns the current potential of the heap, which is:
     * Potential = #trees + 2*#marked
-    * 
+    *
     * In words: The potential equals to the number of trees in the heap
-    * plus twice the number of marked nodes in the heap. 
+    * plus twice the number of marked nodes in the heap.
     */
-    public int potential() 
-    {        	
-    	return numTrees +2*numMarked; // if numTrees is hard to maintain we can do 
+    public int potential()
+    {
+    	return numTrees +2*numMarked; // if numTrees is hard to maintain we can do
     								  // this function in O(n) by going on all the roots
     }
-    
+
 
    /**
-    * public static int totalLinks() 
+    * public static int totalLinks()
     *
     * This static function returns the total number of link operations made during the
     * run-time of the program. A link operation is the operation which gets as input two
@@ -241,48 +232,49 @@ public class FibonacciHeap
     * tree which has larger value in its root under the other tree.
     */
     public static int totalLinks()
-    {    
+    {
     	return SumsLinks; // should be replaced by student code
     }
 
    /**
-    * public static int totalCuts() 
+    * public static int totalCuts()
     *
     * This static function returns the total number of cut operations made during the
     * run-time of the program. A cut operation is the operation which disconnects a subtree
-    * from its parent (during decreaseKey/delete methods). 
+    * from its parent (during decreaseKey/delete methods).
     */
     public static int totalCuts()
-    {    
+    {
     	return SumsCuts; // should be replaced by student code
     }
 
      /**
-    * public static int[] kMin(FibonacciHeap H, int k) 
+    * public static int[] kMin(FibonacciHeap H, int k)
     *
     * This static function returns the k smallest elements in a Fibonacci heap that contains a single tree.
     * The function should run in O(k*deg(H)). (deg(H) is the degree of the only tree in H.)
-    *  
-    * ###CRITICAL### : you are NOT allowed to change H. 
+    *
+    * ###CRITICAL### : you are NOT allowed to change H.
     */
     public static int[] kMin(FibonacciHeap H, int k)
-    {    
+    {
         int[] arr = new int[100];
         return arr; // should be replaced by student code
     }
-    
+
    /**
     * public class HeapNode
-    * 
+    *
     * If you wish to implement classes other than FibonacciHeap
-    * (for example HeapNode), do it in this file, not in another file. 
-    *  
+    * (for example HeapNode), do it in this file, not in another file.
+    *
     */
-   public static void cut(HeapNode x) //our func
+   public void cut(HeapNode x) //our func
    {
        HeapNode temp_p = x.getParent();
        x.setParent(null);
        x.setMarked(false);
+       HeapNode prev_of_x = last.getPrev();
        temp_p.setRank(temp_p.getRank()-1);
        if(x.getNext() == x){temp_p.setChild(null);}
        else
@@ -291,8 +283,12 @@ public class FibonacciHeap
            x.getPrev().setNext(x.getNext());
            x.getNext().setPrev(x.getPrev());
        }
+	   prev_of_x.setNext(x);
+	   x.setPrev(prev_of_x);
+	   x.setNext(last);
+	   last.setPrev(x);
    }
-   public static void cascading_cut(HeapNode x) //our func
+   public void cascading_cut(HeapNode x) //our func
    {
        HeapNode temp_p = x.getParent();
        cut(x);
@@ -321,33 +317,21 @@ public class FibonacciHeap
        big.setParent(small);
        HeapNode brother_of_biggie = small.getChild();
        if(brother_of_biggie == null){small.setChild(big);}//in case small has no kids
-       if(brother_of_biggie == brother_of_biggie)
-       {
-
+       if(brother_of_biggie.getNext() == brother_of_biggie)//in case  only 1 child
+	   {
+	   		brother_of_biggie.setNext(big);
+	   		brother_of_biggie.setPrev(big);
+	   		big.setNext(brother_of_biggie);
+	   		big.setPrev(brother_of_biggie);
        }
-
-
-   }
-   
-   public void delete_root(HeapNode x) {
-	   
-	   HeapNode temp = x.getChild();
-	
-	   if (temp == null) {
-		   x.getPrev().setNext(x.getNext());
-		   x.getNext().setPrev(x.getPrev());
+       else
+	   {
+	   		HeapNode prev_bro = brother_of_biggie.getPrev();
+		   	prev_bro.setNext(big);
+		   	big.setPrev(prev_bro);
+		   	brother_of_biggie.setPrev(big);
+		   	big.setNext(brother_of_biggie);
 	   }
-	   else {
-		   while (temp.getNext()!= x.getChild()) { // delete x kids pointer to x.
-				temp.setParent(null);
-				temp = temp.getNext();
-		   		}
-		   temp.setParent(null);
-		   x.getPrev().setNext(x.getChild());	// make x.prev point to x child and then to x.next
-		   x.getNext().setPrev(x.getChild().getPrev());
-		   x.getChild().getPrev().setNext(x.getNext());
-		   x.getChild().setPrev(x.getPrev());
-	   }   
    }
 
     public static class HeapNode{
