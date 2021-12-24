@@ -174,13 +174,42 @@ public class FibonacciHeap
     public static class HeapNode{
 
     	public int key;
+    	private boolean marked; //true iff i lost a boy( or girl, it's 2022 man(or woman(or tractor)))
+    	private int rank;
+    	private HeapNode child;
+    	private HeapNode prev;
+    	private HeapNode parent;
+
+
 
     	public HeapNode(int key) {
     		this.key = key;
     	}
-
+        // TODO: 12/24/2021 fields are uninitialized until inserted to the heap
     	public int getKey() {
     		return this.key;
     	}
-    }
+
+    	public boolean isMarked() {return marked;}
+
+       public int getRank() {return rank;}
+
+       public HeapNode getChild() {return child;}
+
+       public HeapNode getPrev() {return prev;}
+
+       public HeapNode getParent() {return parent;}
+
+       public void setMarked(boolean marked) {this.marked = marked;}
+
+       public void setRank(int rank) {this.rank = rank;}
+
+       public void setChild(HeapNode child) {this.child = child;}
+
+       public void setKey(int key) {this.key = key;}
+
+       public void setPrev(HeapNode prev) {this.prev = prev;}
+
+       public void setParent(HeapNode parent) {this.parent = parent;}
+   }
 }
