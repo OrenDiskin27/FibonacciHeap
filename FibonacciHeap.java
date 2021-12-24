@@ -9,7 +9,7 @@ import java.util.List;
  */
 public class FibonacciHeap
 {
-	public HeapNode min;
+	public HeapNode min = new HeapNode(Integer.MAX_VALUE);
 	public HeapNode first;
 	public HeapNode last;
 	public int size;
@@ -54,18 +54,19 @@ public class FibonacciHeap
     */
     public HeapNode insert(int key)
     {    
-    	new HeapNode newHeap = HeapNode(key);
+    	HeapNode newHeap = new HeapNode(key);
     	
     	last.prev.setNext(newHeap);
     	last.next.setPrev(newHeap);
-    	newHeap.setNext(last.getNext);
-    	newHeap.setPrev(last.getPrev);
+    	newHeap.setNext(last.getNext());
+    	newHeap.setPrev(last.getPrev());
     	last = newHeap;
     	
     	if (newHeap.getKey() < min.getKey()) {
     		min = newHeap;
     	}
 
+    	size += 1;
     	return newHeap;
     }
 
@@ -96,14 +97,33 @@ public class FibonacciHeap
     	return min;
     } 
     
-   /**
+   
+    
+    
+    /**
     * public void meld (FibonacciHeap heap2)
     *
     * Melds heap2 with the current heap.
     *
     */
-    public void meld (FibonacciHeap heap2)
+    public void meld (FibonacciHeap heap2) // cheack that heap2 does not contain keys from this heap
     {
+    	size += heap2.size();
+    	last.setNext(heap2.first);
+    	heap2.first.setPrev(last);
+    	first.setPrev(heap2.last);
+    	heap2.last.setNext(first);
+    	
+    	last = heap2.last;
+    	
+    	if (min.getKey() < heap2.min.getKey()) {
+    		return;
+    	}
+    	else {
+    		min = heap2.min;
+    	}
+    	
+    	
     	  return; // should be replaced by student code   		
     }
 
@@ -128,9 +148,9 @@ public class FibonacciHeap
     public int[] countersRep()
     {
     	int[] arr = new int[size];    	
-    	new HeapNode index = first;
+    	HeapNode index = first;
     	
-    	While (index.next != first){	// add to arr[i] +1 if rank = i
+    	while (index.next != first){	// add to arr[i] +1 if rank = i
     		arr[index.getRank()] += 1;
     	}
     	
@@ -155,7 +175,7 @@ public class FibonacciHeap
 	* It is assumed that x indeed belongs to the heap.
     *
     */
-    public void delete(HeapNode x) 
+    public void delete(HeapNode x) //remmember to size -= 1; if it works
     {    
     	return; // should be replaced by student code
     }
@@ -259,7 +279,9 @@ public class FibonacciHeap
     		this.key = key;
     	}
 
-    	public int getKey() {
+    	
+
+		public int getKey() {
     		return this.key;
     	}
 
