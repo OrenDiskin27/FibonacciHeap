@@ -18,9 +18,7 @@ public class FibonacciHeap
 	public int numTrees;
 
 	
-	public FibonacciHeap(){
-		
-	}
+	public FibonacciHeap(){}
 	public FibonacciHeap(HeapNode x){
 		min = x;
 		last = x;
@@ -271,11 +269,12 @@ public class FibonacciHeap
     * (for example HeapNode), do it in this file, not in another file. 
     *  
     */
-   public static void cut(HeapNode x) //our func
+   public void cut(HeapNode x) //our func
    {
        HeapNode temp_p = x.getParent();
        x.setParent(null);
        x.setMarked(false);
+       HeapNode prev_of_x = last.getPrev();
        temp_p.setRank(temp_p.getRank()-1);
        if(x.getNext() == x){temp_p.setChild(null);}
        else
@@ -284,8 +283,12 @@ public class FibonacciHeap
            x.getPrev().setNext(x.getNext());
            x.getNext().setPrev(x.getPrev());
        }
+	   prev_of_x.setNext(x);
+	   x.setPrev(prev_of_x);
+	   x.setNext(last);
+	   last.setPrev(x);
    }
-   public static void cascading_cut(HeapNode x) //our func
+   public void cascading_cut(HeapNode x) //our func
    {
        HeapNode temp_p = x.getParent();
        cut(x);
@@ -314,16 +317,21 @@ public class FibonacciHeap
        big.setParent(small);
        HeapNode brother_of_biggie = small.getChild();
        if(brother_of_biggie == null){small.setChild(big);}//in case small has no kids
-       if(brother_of_biggie == brother_of_biggie)
-       {
-
+       if(brother_of_biggie.getNext() == brother_of_biggie)//in case  only 1 child
+	   {
+	   		brother_of_biggie.setNext(big);
+	   		brother_of_biggie.setPrev(big);
+	   		big.setNext(brother_of_biggie);
+	   		big.setPrev(brother_of_biggie);
        }
-
-
-   }
-   
-   public void merg() {
-	   
+       else
+	   {
+	   		HeapNode prev_bro = brother_of_biggie.getPrev();
+		   	prev_bro.setNext(big);
+		   	big.setPrev(prev_bro);
+		   	brother_of_biggie.setPrev(big);
+		   	big.setNext(brother_of_biggie);
+	   }
    }
 
     public static class HeapNode{
