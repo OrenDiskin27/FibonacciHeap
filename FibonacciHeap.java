@@ -186,9 +186,15 @@ public class FibonacciHeap
 	* It is assumed that x indeed belongs to the heap.
     *
     */
-    public void delete(HeapNode x) //remmember to size -= 1; if it works
-    {
-    	return; // should be replaced by student code
+    public void delete(HeapNode x) 
+    {    
+    	size -= 1;   	    	
+    
+    	cascading_cut(x);
+    	
+    	delete_root(x);
+    	
+    	
     }
 
    /**
@@ -203,7 +209,7 @@ public class FibonacciHeap
     	if (x.getParent() == null || x.getParent().getKey() < x.getKey()) {
     		return;
     	}
-    	cut (x,x.getParent());
+    	cascading_cut (x);
     	return;
     }
 
@@ -324,14 +330,29 @@ public class FibonacciHeap
 	   		big.setNext(brother_of_biggie);
 	   		big.setPrev(brother_of_biggie);
        }
-       else
-	   {
-	   		HeapNode prev_bro = brother_of_biggie.getPrev();
-		   	prev_bro.setNext(big);
-		   	big.setPrev(prev_bro);
-		   	brother_of_biggie.setPrev(big);
-		   	big.setNext(brother_of_biggie);
+
+
+   }
+   
+   public void delete_root(HeapNode x) {
+	   
+	   HeapNode temp = x.getChild();
+	
+	   if (temp == null) {
+		   x.getPrev().setNext(x.getNext());
+		   x.getNext().setPrev(x.getPrev());
 	   }
+	   else {
+		   while (temp.getNext()!= x.getChild()) { // delete x kids pointer to x.
+				temp.setParent(null);
+				temp = temp.getNext();
+		   		}
+		   temp.setParent(null);
+		   x.getPrev().setNext(x.getChild());	// make x.prev point to x child and then to x.next
+		   x.getNext().setPrev(x.getChild().getPrev());
+		   x.getChild().getPrev().setNext(x.getNext());
+		   x.getChild().setPrev(x.getPrev());
+	   }   
    }
 
     public static class HeapNode{
