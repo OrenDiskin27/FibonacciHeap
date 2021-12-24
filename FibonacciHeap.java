@@ -1,3 +1,7 @@
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * FibonacciHeap
  *
@@ -5,7 +9,25 @@
  */
 public class FibonacciHeap
 {
+	public HeapNode min;
+	public HeapNode last;
+	public int size;
+	public int numMarked;
+	static int SumsLinks;
+	static int SumsCuts;
+	public int numTrees;
 
+	
+	public FibonacciHeap(){
+		
+	}
+	public FibonacciHeap(HeapNode x){
+		min = x;
+		last = x;
+		x.setNext(x);
+		x.setPrev(x);
+	}
+	
    /**
     * public boolean isEmpty()
     *
@@ -14,7 +36,10 @@ public class FibonacciHeap
     */
     public boolean isEmpty()
     {
-    	return false; // should be replaced by student code
+    	if (size == 0) {
+    		return true;
+    	}
+    	return false;
     }
 		
    /**
@@ -27,7 +52,20 @@ public class FibonacciHeap
     */
     public HeapNode insert(int key)
     {    
-    	return new HeapNode(key); // should be replaced by student code
+    	HeapNode newHeap = new HeapNode(key);
+    	
+    	last.prev.setNext(newHeap);
+    	last.next.setPrev(newHeap);
+    	newHeap.setNext(last.getNext());
+    	newHeap.setPrev(last.getPrev());
+    	last = newHeap;
+    	
+    	if (newHeap.getKey() < min.getKey()) {
+    		min = newHeap;
+    	}
+
+    	size += 1;
+    	return newHeap;
     }
 
    /**
@@ -38,6 +76,7 @@ public class FibonacciHeap
     */
     public void deleteMin()
     {
+    	
      	return; // should be replaced by student code
      	
     }
@@ -50,19 +89,55 @@ public class FibonacciHeap
     */
     public HeapNode findMin()
     {
-        if (this.size == 0) {return null;}
-        return this.min;
+    	if (isEmpty()) {
+    		return null;
+    	}
+    	return min;
     } 
     
-   /**
+   
+    
+    
+    /**
     * public void meld (FibonacciHeap heap2)
     *
     * Melds heap2 with the current heap.
     *
     */
-    public void meld (FibonacciHeap heap2)
+    public void meld (FibonacciHeap heap2) // cheack that heap2 does not contain keys from this heap
     {
-    	  return; // should be replaced by student code   		
+    	if (isEmpty()) {
+    		if (heap2.isEmpty()) { // both are empty
+    			return;
+    		}
+    		else { // heap 2 isnt empty
+    			min = heap2.min;
+    			last = heap2.last;
+    			size = heap2.size();
+    		}
+
+    	}
+    	else { 
+    		if (heap2.isEmpty()) { // this isnt empty and heap2 is empty
+    			return;
+    		}
+    		else { // both are not empty;
+    			size += heap2.size();
+    			
+    			last.getNext().setPrev(heap2.last); // fix all pointers for last
+    			heap2.last.getNext().setPrev(last);
+    			last.setNext(heap2.last.getNext());
+    			heap2.last.setNext(last.getNext());
+ 			
+    	    	if (min.getKey() < heap2.min.getKey()) { 
+    	    		return;
+    	    	}
+    	    	else {
+    	    		min = heap2.min;
+    	    	}
+    		}
+    	}
+    	return;	
     }
 
    /**
@@ -73,7 +148,7 @@ public class FibonacciHeap
     */
     public int size()
     {
-    	return -123; // should be replaced by student code
+    	return size; 
     }
     	
     /**
@@ -85,9 +160,26 @@ public class FibonacciHeap
     */
     public int[] countersRep()
     {
-    	int[] arr = new int[100];
-        return arr; //	 to be replaced by student code
-    }
+    	int[] arr = new int[size];    	
+    	HeapNode index = last.getNext();
+    	
+    	while (index.next != last.getNext()){	// add to arr[i] +1 if rank = i
+    		arr[index.getRank()] += 1;
+    	}
+    	
+    	arr[index.getRank()] += 1;
+    	
+    	int targetIndex = 0;	// deletes all 0 in arr;											
+    	for( int sourceIndex = 0;  sourceIndex < arr.length;  sourceIndex++ )
+    	{
+    	    if( arr[sourceIndex] != 0 )
+    	    	arr[targetIndex++] = arr[sourceIndex];
+    	}
+    	int[] newArray = new int[targetIndex];
+    	System.arraycopy( arr, 0, newArray, 0, targetIndex );
+    	
+    	return newArray;
+        }
 	
    /**
     * public void delete(HeapNode x)
@@ -96,7 +188,7 @@ public class FibonacciHeap
 	* It is assumed that x indeed belongs to the heap.
     *
     */
-    public void delete(HeapNode x) 
+    public void delete(HeapNode x) //remmember to size -= 1; if it works
     {    
     	return; // should be replaced by student code
     }
@@ -109,7 +201,12 @@ public class FibonacciHeap
     */
     public void decreaseKey(HeapNode x, int delta)
     {    
-    	return; // should be replaced by student code
+    	x.setKey(x.getKey() - delta);
+    	if (x.getParent() == null || x.getParent().getKey() < x.getKey()) {
+    		return;
+    	}
+    	cut (x,x.getParent());
+    	return; 
     }
 
    /**
@@ -122,9 +219,11 @@ public class FibonacciHeap
     * plus twice the number of marked nodes in the heap. 
     */
     public int potential() 
-    {    
-    	return -234; // should be replaced by student code
+    {        	
+    	return numTrees +2*numMarked; // if numTrees is hard to maintain we can do 
+    								  // this function in O(n) by going on all the roots
     }
+    
 
    /**
     * public static int totalLinks() 
@@ -136,7 +235,7 @@ public class FibonacciHeap
     */
     public static int totalLinks()
     {    
-    	return -345; // should be replaced by student code
+    	return SumsLinks; // should be replaced by student code
     }
 
    /**
@@ -148,7 +247,7 @@ public class FibonacciHeap
     */
     public static int totalCuts()
     {    
-    	return -456; // should be replaced by student code
+    	return SumsCuts; // should be replaced by student code
     }
 
      /**
@@ -222,6 +321,10 @@ public class FibonacciHeap
 
 
    }
+   
+   public void merg() {
+	   
+   }
 
     public static class HeapNode{
 
@@ -237,7 +340,9 @@ public class FibonacciHeap
     		this.key = key;
     	}
 
-    	public int getKey() {
+    	
+
+		public int getKey() {
     		return this.key;
     	}
 
