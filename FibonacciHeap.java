@@ -50,7 +50,8 @@ public class FibonacciHeap
     */
     public HeapNode findMin()
     {
-    	return new HeapNode(678);// should be replaced by student code
+        if (this.size == 0) {return null;}
+        return this.min;
     } 
     
    /**
@@ -173,9 +174,27 @@ public class FibonacciHeap
     */
    public static void cut(HeapNode x)
    {
-       
+       HeapNode temp_p = x.getParent();
        x.setParent(null);
-
+       x.setMarked(false);
+       temp_p.setRank(temp_p.getRank()-1);
+       if(x.getNext() == x){temp_p.setChild(null);}
+       else
+       {
+           temp_p.setChild(x.getNext());
+           x.getPrev().setNext(x.getNext());
+           x.getNext().setPrev(x.getPrev());
+       }
+   }
+   public static void cascading_cut(HeapNode x)
+   {
+       HeapNode temp_p = x.getParent();
+       cut(x);
+       if(temp_p != null)
+       {
+           if(!temp_p.isMarked()){temp_p.setMarked(true);}
+           else{cascading_cut(temp_p);}
+       }
    }
 
     public static class HeapNode{
