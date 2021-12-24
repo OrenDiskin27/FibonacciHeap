@@ -205,7 +205,7 @@ public class FibonacciHeap
     	if (x.getParent() == null || x.getParent().getKey() < x.getKey()) {
     		return;
     	}
-    	cut (x,x.getParent());
+    	cut (x);
     	return; 
     }
 
@@ -271,7 +271,7 @@ public class FibonacciHeap
     * (for example HeapNode), do it in this file, not in another file. 
     *  
     */
-   public static void cut(HeapNode x)
+   public void cut(HeapNode x)
    {
        
        x.setParent(null);
