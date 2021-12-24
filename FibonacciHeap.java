@@ -188,9 +188,15 @@ public class FibonacciHeap
 	* It is assumed that x indeed belongs to the heap.
     *
     */
-    public void delete(HeapNode x) //remmember to size -= 1; if it works
+    public void delete(HeapNode x) 
     {    
-    	return; // should be replaced by student code
+    	size -= 1;   	    	
+    
+    	cascading_cut(x);
+    	
+    	delete_root(x);
+    	
+    	
     }
 
    /**
@@ -205,7 +211,7 @@ public class FibonacciHeap
     	if (x.getParent() == null || x.getParent().getKey() < x.getKey()) {
     		return;
     	}
-    	cut (x);
+    	cut(x);
     	return; 
     }
 
@@ -271,15 +277,76 @@ public class FibonacciHeap
     * (for example HeapNode), do it in this file, not in another file. 
     *  
     */
-   public void cut(HeapNode x)
+   public static void cut(HeapNode x) //our func
    {
-       
+       HeapNode temp_p = x.getParent();
        x.setParent(null);
+       x.setMarked(false);
+       temp_p.setRank(temp_p.getRank()-1);
+       if(x.getNext() == x){temp_p.setChild(null);}
+       else
+       {
+           temp_p.setChild(x.getNext());
+           x.getPrev().setNext(x.getNext());
+           x.getNext().setPrev(x.getPrev());
+       }
+   }
+   public static void cascading_cut(HeapNode x) //our func
+   {
+       HeapNode temp_p = x.getParent();
+       cut(x);
+       if(temp_p != null)
+       {
+           if(!temp_p.isMarked()){temp_p.setMarked(true);}
+           else{cascading_cut(temp_p);}
+       }
+   }
+   //gets 2 nodes that represent trees in the heap, with the same degree
+   public static void merge(HeapNode x, HeapNode y)
+   {
+       HeapNode small;
+       HeapNode big;
+       if ((x.getParent() != null)||(y.getParent()!= null)){System.out.println("kick back, you just merged by 2 nodes that aint been on the surface, B-I-A-T-C-H!");}
+       if (x.getKey()<y.getKey())
+       {
+           small = x;
+           big = y;
+       }
+       else
+       {
+           small = y;
+           big = x;
+       }
+       big.setParent(small);
+       HeapNode brother_of_biggie = small.getChild();
+       if(brother_of_biggie == null){small.setChild(big);}//in case small has no kids
+       if(brother_of_biggie == brother_of_biggie)
+       {
+
+       }
+
 
    }
    
-   public void merg() {
+   public void delete_root(HeapNode x) {
 	   
+	   HeapNode temp = x.getChild();
+	
+	   if (temp == null) {
+		   x.getPrev().setNext(x.getNext());
+		   x.getNext().setPrev(x.getPrev());
+	   }
+	   else {
+		   while (temp.getNext()!= x.getChild()) { // delete x kids pointer to x.
+				temp.setParent(null);
+				temp = temp.getNext();
+		   		}
+		   temp.setParent(null);
+		   x.getPrev().setNext(x.getChild());	// make x.prev point to x child and then to x.next
+		   x.getNext().setPrev(x.getChild().getPrev());
+		   x.getChild().getPrev().setNext(x.getNext());
+		   x.getChild().setPrev(x.getPrev());
+	   }   
    }
 
     public static class HeapNode{
