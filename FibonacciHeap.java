@@ -21,6 +21,7 @@ public class FibonacciHeap
 	public FibonacciHeap(){
 		
 	}
+	public FibonacciHeap(){}
 	public FibonacciHeap(HeapNode x){
 		min = x;
 		last = x;
