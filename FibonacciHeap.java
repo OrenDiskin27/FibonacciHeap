@@ -87,8 +87,12 @@ public class FibonacciHeap
     {
     	
      	delete_root(min); 
+     	actuallyFindMin();
      	
-     	HeapNode temp = last;	// looking for the new min, going on the roots
+    }
+
+    public HeapNode actuallyFindMin() { // this func sets the new min and return it
+    	HeapNode temp = last;	// looking for the new min, going on the roots
      	if (temp == null) {
      		min = null;
      	}
@@ -102,8 +106,8 @@ public class FibonacciHeap
          		temp = temp.getNext();
          	}
      	}
+     	return min;
     }
-
    /**
     * public HeapNode findMin()
     *
@@ -235,7 +239,7 @@ public class FibonacciHeap
     */
     public void decreaseKey(HeapNode x, int delta)
     {
-    	x.setKey(x.getKey() - delta);
+    	x.setKey(x.getKey() - delta); // this is not good, what 
     	if (x.getKey() < min.getKey()) {
     		min = x;
     	}
@@ -243,7 +247,6 @@ public class FibonacciHeap
     	if (x.getParent() == null || x.getParent().getKey() < x.getKey()) {
     		return;
     	}
-    	SumsCuts += 1;
     	cascading_cut (x);
     	return;
     }
@@ -256,7 +259,6 @@ public class FibonacciHeap
     	if (x.getParent() == null || x.getParent().getKey() < x.getKey()) {
     		return;
     	}
-    	SumsCuts += 1;
     	cascading_cut (x);    	
     	deleteMin();
     	
@@ -319,6 +321,8 @@ public class FibonacciHeap
 
    public void cut(HeapNode x) //our func
    {
+	   SumsCuts += 1;
+	   
        HeapNode temp_p = x.getParent();
        x.setParent(null);
        x.setMarked(false);
@@ -367,21 +371,21 @@ public class FibonacciHeap
        big.setParent(small);
        HeapNode brother_of_biggie = small.getChild();
        if(brother_of_biggie == null){small.setChild(big);}//in case small has no kids
-       if(brother_of_biggie.getNext() == brother_of_biggie)//in case  only 1 child
+       else if(brother_of_biggie.getNext() == brother_of_biggie)//in case  only 1 child
 	   {
 	   		brother_of_biggie.setNext(big);
 	   		brother_of_biggie.setPrev(big);
 	   		big.setNext(brother_of_biggie);
 	   		big.setPrev(brother_of_biggie);
        }
-
+       big.setRank(big.getRank()+1);
 
    }
    
    public void delete_root(HeapNode x) {
 	   
 	   HeapNode temp = x.getChild();
-	
+	   
 	   if (temp == null) {
 		   x.getPrev().setNext(x.getNext());
 		   x.getNext().setPrev(x.getPrev());
@@ -397,16 +401,48 @@ public class FibonacciHeap
 		   x.getChild().getPrev().setNext(x.getNext());
 		   x.getChild().setPrev(x.getPrev());
 	   }   
+	   consolidating();
+	   
+	   if (x == last) {
+		   last = x.getPrev();
+	   }
+	   if (x == min) {
+		   min = actuallyFindMin();
+	   }
+	   
    }
 
-   public void Consolidating() {
+   public void consolidating() {
 	  Map<Integer,HeapNode> map = new HashMap<Integer,HeapNode>();
-	  HeapNode temp = last.getNext();
-	  while (temp != last) {
+	  while (last.getNext() != last) {
+		  HeapNode temp = last.getNext();
+		  last.setNext(temp.getNext());
+		  temp.getNext().setPrev(last);
+		  temp.setNext(temp);
+		  temp.setPrev(temp);
 		  addDic(map,temp);
-		  temp = temp.getNext();
+		  //print last and last.next and cheack while condition never stops
+		  System.out.println(map.toString());
 	  }
-	  addDic(map,temp);
+	  last = null;
+	  int k =0;
+	  
+	  while (map.size() != 0) {
+		  if (map.containsKey(k)) {
+			  if (last == null) {
+				  last = map.remove(k);
+			  }
+			  else {
+				  HeapNode temp = map.remove(k);
+				  last.getNext().setPrev(temp);
+				  temp.setNext(last.getNext());
+				  last.setNext(temp);
+				  temp.setPrev(last);
+				  last = temp;
+			  }
+		  }
+	  }
+	  
    }
    
    public void addDic(Map<Integer, HeapNode> map, HeapNode x) { // func to help Consolidating
@@ -414,9 +450,19 @@ public class FibonacciHeap
 		   map.put(x.getRank(), x);
 	   }
 	   else {
+		   
 		   HeapNode temp = map.remove(x.getRank());
-		   merge(x,temp); // ask yoni if this is how it works. i want a tree that is x and temp combined
-		   addDic(map,x);
+		   if(temp.getParent()!=null) {System.out.println("Yo, this node got parents bro,don't treat it like that");}
+
+		   if (x.getKey() < temp.getKey()) {
+			   merge(x,temp);
+			   addDic(map,x);
+		   }
+		   else {
+			   merge(x,temp);
+			   addDic(map,temp);
+		   }
+		   
 	   }
    }
    
