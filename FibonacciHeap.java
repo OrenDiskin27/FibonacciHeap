@@ -15,8 +15,8 @@ public class FibonacciHeap
 	public HeapNode last;
 	public int size;
 	public int numMarked;
-	static int SumsLinks;
-	static int SumsCuts;
+	public static int SumsLinks;
+	public static int SumsCuts;
 	public int numTrees;
 
 	
@@ -85,9 +85,10 @@ public class FibonacciHeap
     */
     public void deleteMin()
     {
-    	
-     	delete_root(min); 
-     	actuallyFindMin();
+    	if (!isEmpty()) {
+    		delete_root(min); 
+         	actuallyFindMin();
+    	}
      	
     }
 
@@ -224,9 +225,7 @@ public class FibonacciHeap
     *
     */
     public void delete(HeapNode x) 
-    {    
-    	size -= 1;   	    	
-    
+    {        
     	decreaseKeyThenDelete(x);
     	
     }
@@ -253,6 +252,7 @@ public class FibonacciHeap
     
     public void decreaseKeyThenDelete(HeapNode x) // func ment for delete
     {
+    	
     	x.setKey(min.getKey()-1); // now x is min
     	min = x;
     	
@@ -321,8 +321,9 @@ public class FibonacciHeap
 
    public void cut(HeapNode x) //our func
    {
+	   // if x is root what sould happen?
+
 	   SumsCuts += 1;
-	   
        HeapNode temp_p = x.getParent();
        x.setParent(null);
        x.setMarked(false);
@@ -339,6 +340,8 @@ public class FibonacciHeap
 	   x.setPrev(prev_of_x);
 	   x.setNext(last);
 	   last.setPrev(x);
+       last = x;//yonis adition - che(a)ck if works
+
    }
    public void cascading_cut(HeapNode x) //our func
    {
@@ -384,6 +387,8 @@ public class FibonacciHeap
    
    public void delete_root(HeapNode x) {
 	   
+	   size -= 1;
+
 	   HeapNode temp = x.getChild();
 	   
 	   if (temp == null) {
@@ -395,11 +400,18 @@ public class FibonacciHeap
 				temp.setParent(null);
 				temp = temp.getNext();
 		   		}
-		   temp.setParent(null);
-		   x.getPrev().setNext(x.getChild());	// make x.prev point to x child and then to x.next
-		   x.getNext().setPrev(x.getChild().getPrev());
-		   x.getChild().getPrev().setNext(x.getNext());
-		   x.getChild().setPrev(x.getPrev());
+		   if (x.getNext() == x) {
+			   last = temp;
+			   min = temp;
+		   }
+		   else {
+			   temp.setParent(null);
+			   x.getPrev().setNext(x.getChild());	// make x.prev point to x child and then to x.next
+			   x.getNext().setPrev(x.getChild().getPrev());
+			   x.getChild().getPrev().setNext(x.getNext());
+			   x.getChild().setPrev(x.getPrev());
+		   }
+		   
 	   }   
 	   if (x == last) {
 		   last = x.getPrev();
@@ -409,7 +421,6 @@ public class FibonacciHeap
 		   min = actuallyFindMin();
 	   }
 	   consolidating();
-	   System.out.println("a");
 	   
 	   
    }
@@ -417,20 +428,18 @@ public class FibonacciHeap
    public void consolidating() {
 	  Map<Integer,HeapNode> map = new HashMap<Integer,HeapNode>();
 	  while (last.getNext() != last) {
-		  this.print_roots();
-
 		  HeapNode temp = last.getNext();
 		  last.setNext(temp.getNext());
 		  temp.getNext().setPrev(last);
 		  temp.setNext(temp);
 		  temp.setPrev(temp);
 		  addDic(map,temp);
-		  //print last and last.next and check while condition never stops
-		  System.out.println(map.toString());
+	
 	  }
 	  addDic(map,last);
 	  last = null;
 	  int k =0;
+	  numTrees = map.size();
 	  
 	  while (map.size() != 0) {
 		  if (map.containsKey(k)) {
