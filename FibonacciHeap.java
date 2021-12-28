@@ -378,7 +378,7 @@ public class FibonacciHeap
 	   		big.setNext(brother_of_biggie);
 	   		big.setPrev(brother_of_biggie);
        }
-       big.setRank(big.getRank()+1);
+       small.setRank(small.getRank()+1);
 
    }
    
@@ -401,29 +401,34 @@ public class FibonacciHeap
 		   x.getChild().getPrev().setNext(x.getNext());
 		   x.getChild().setPrev(x.getPrev());
 	   }   
-	   consolidating();
-	   
 	   if (x == last) {
 		   last = x.getPrev();
 	   }
 	   if (x == min) {
+		   min = null;
 		   min = actuallyFindMin();
 	   }
+	   consolidating();
+	   System.out.println("a");
+	   
 	   
    }
 
    public void consolidating() {
 	  Map<Integer,HeapNode> map = new HashMap<Integer,HeapNode>();
 	  while (last.getNext() != last) {
+		  this.print_roots();
+
 		  HeapNode temp = last.getNext();
 		  last.setNext(temp.getNext());
 		  temp.getNext().setPrev(last);
 		  temp.setNext(temp);
 		  temp.setPrev(temp);
 		  addDic(map,temp);
-		  //print last and last.next and cheack while condition never stops
+		  //print last and last.next and check while condition never stops
 		  System.out.println(map.toString());
 	  }
+	  addDic(map,last);
 	  last = null;
 	  int k =0;
 	  
@@ -441,6 +446,7 @@ public class FibonacciHeap
 				  last = temp;
 			  }
 		  }
+		   k += 1;
 	  }
 	  
    }
@@ -468,7 +474,7 @@ public class FibonacciHeap
    
    public void print_roots() {
 	   List<Integer> lst = new ArrayList<Integer>();
-	   for (HeapNode temp = last.getNext(); temp != last; temp = temp.getNext() ) {
+	   for (HeapNode temp = last.getNext(); temp != last; temp = temp.getNext()) {
 		   lst.add(temp.getKey());
 	   }
 	   lst.add(last.getKey());
