@@ -19,6 +19,7 @@ public class FibonacciHeap
 
 	
 	public FibonacciHeap(){}
+	
 	public FibonacciHeap(HeapNode x){
 		min = x;
 		last = x;
@@ -74,7 +75,7 @@ public class FibonacciHeap
     */
     public void deleteMin()
     {
-
+    	
      	return; // should be replaced by student code
 
     }
@@ -85,7 +86,7 @@ public class FibonacciHeap
     * Returns the node of the heap whose key is minimal, or null if the heap is empty.
     *
     */
-    public HeapNode findMin()
+    public HeapNode findMin() 
     {
     	if (isEmpty()) {
     		return null;
@@ -239,7 +240,7 @@ public class FibonacciHeap
     */
     public static int totalLinks()
     {
-    	return SumsLinks; // should be replaced by student code
+    	return SumsLinks; // need to fix this
     }
 
    /**
@@ -251,7 +252,7 @@ public class FibonacciHeap
     */
     public static int totalCuts()
     {
-    	return SumsCuts; // should be replaced by student code
+    	return SumsCuts;  // need to fix this
     }
 
      /**
