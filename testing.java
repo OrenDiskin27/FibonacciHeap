@@ -11,7 +11,7 @@ public class testing {
 		for (int k = m-1; k>-2; k--) {
 			lst.add(fib.insert(k));
 		}
-		System.out.println(fib.totalCuts());
+//		System.out.println(fib.totalCuts());
 
 		fib.print_roots();
 		fib.deleteMin();
