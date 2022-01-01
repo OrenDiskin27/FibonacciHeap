@@ -1,6 +1,8 @@
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * FibonacciHeap
@@ -13,8 +15,8 @@ public class FibonacciHeap
 	public HeapNode last;
 	public int size;
 	public int numMarked;
-	static int SumsLinks;
-	static int SumsCuts;
+	public static int SumsLinks;
+	public static int SumsCuts;
 	public int numTrees;
 
 	
@@ -51,19 +53,28 @@ public class FibonacciHeap
     */
     public HeapNode insert(int key)
     {
+    	
     	HeapNode newHeap = new HeapNode(key);
-
-    	last.prev.setNext(newHeap);
-    	last.next.setPrev(newHeap);
-    	newHeap.setNext(last.getNext());
-    	newHeap.setPrev(last.getPrev());
-    	last = newHeap;
-
-    	if (newHeap.getKey() < min.getKey()) {
+    	
+    	if (isEmpty()) {
     		min = newHeap;
+    		last = newHeap;
+    		newHeap.setNext(newHeap);
+    		newHeap.setPrev(newHeap);
     	}
+    	else {
+    		last.next.setPrev(newHeap);
+        	newHeap.setNext(last.getNext());
+        	last.setNext(newHeap);
+        	newHeap.setPrev(last);
+        	last = newHeap;
 
+        	if (newHeap.getKey() < min.getKey()) {
+        		min = newHeap;
+        	}
+    	}
     	size += 1;
+    	numTrees +=1;
     	return newHeap;
     }
 
@@ -75,11 +86,30 @@ public class FibonacciHeap
     */
     public void deleteMin()
     {
-    	
-     	return; // should be replaced by student code
-
+    	if (!isEmpty()) {
+    		delete_root(min); 
+         	actuallyFindMin();
+    	}
+     	
     }
 
+    public HeapNode actuallyFindMin() { // this func sets the new min and return it
+    	HeapNode temp = last;	// looking for the new min, going on the roots
+     	if (temp == null) {
+     		min = null;
+     	}
+     	else {
+     		min = temp;
+     		temp = temp.getNext();
+         	while (temp != last) {
+         		if (temp.getKey() < min.getKey()) {
+         			min = temp;
+         		}
+         		temp = temp.getNext();
+         	}
+     	}
+     	return min;
+    }
    /**
     * public HeapNode findMin()
     *
@@ -113,6 +143,8 @@ public class FibonacciHeap
     			min = heap2.min;
     			last = heap2.last;
     			size = heap2.size();
+    			numMarked = heap2.numMarked;
+    			numTrees = heap2.numTrees;
     		}
 
     	}
@@ -122,12 +154,18 @@ public class FibonacciHeap
     		}
     		else { // both are not empty;
     			size += heap2.size();
+    			numMarked += heap2.numMarked;
+    			numTrees += heap2.numTrees;
 
     			last.getNext().setPrev(heap2.last); // fix all pointers for last
     			heap2.last.getNext().setPrev(last);
+    			
+    			HeapNode temp = last.getNext(); // temp is first in heap1
+    			
     			last.setNext(heap2.last.getNext());
-    			heap2.last.setNext(last.getNext());
+    			heap2.last.setNext(temp);
 
+    			
     	    	if (min.getKey() < heap2.min.getKey()) {
     	    		return;
     	    	}
@@ -162,10 +200,10 @@ public class FibonacciHeap
     	int[] arr = new int[size];
     	HeapNode index = last.getNext();
 
-    	while (index.next != last.getNext()){	// add to arr[i] +1 if rank = i
+    	while (index != last.getNext()){	// add to arr[i] +1 if rank = i
     		arr[index.getRank()] += 1;
+    		index = index.getNext();
     	}
-
     	arr[index.getRank()] += 1;
 
     	int targetIndex = 0;	// deletes all 0 in arr;
@@ -188,13 +226,8 @@ public class FibonacciHeap
     *
     */
     public void delete(HeapNode x) 
-    {    
-    	size -= 1;   	    	
-    
-    	cascading_cut(x);
-    	
-    	delete_root(x);
-    	
+    {        
+    	decreaseKeyThenDelete(x);
     	
     }
 
@@ -206,12 +239,30 @@ public class FibonacciHeap
     */
     public void decreaseKey(HeapNode x, int delta)
     {
-    	x.setKey(x.getKey() - delta);
+    	x.setKey(x.getKey() - delta); // this is not good, what 
+    	if (x.getKey() < min.getKey()) {
+    		min = x;
+    	}
+    	
     	if (x.getParent() == null || x.getParent().getKey() < x.getKey()) {
     		return;
     	}
     	cascading_cut (x);
     	return;
+    }
+    
+    public void decreaseKeyThenDelete(HeapNode x) // func ment for delete
+    {
+    	
+    	x.setKey(min.getKey()-1); // now x is min
+    	min = x;
+    	
+    	if (x.getParent() == null || x.getParent().getKey() < x.getKey()) {
+    		return;
+    	}
+    	cascading_cut (x);    	
+    	deleteMin();
+    	
     }
 
    /**
@@ -269,15 +320,11 @@ public class FibonacciHeap
         return arr; // should be replaced by student code
     }
 
-   /**
-    * public class HeapNode
-    *
-    * If you wish to implement classes other than FibonacciHeap
-    * (for example HeapNode), do it in this file, not in another file.
-    *
-    */
    public void cut(HeapNode x) //our func
    {
+	   // if x is root what sould happen?
+
+	   SumsCuts += 1;
        HeapNode temp_p = x.getParent();
        x.setParent(null);
        x.setMarked(false);
@@ -294,6 +341,8 @@ public class FibonacciHeap
 	   x.setPrev(prev_of_x);
 	   x.setNext(last);
 	   last.setPrev(x);
+       last = x;//yonis adition - che(a)ck if works
+
    }
    public void cascading_cut(HeapNode x) //our func
    {
@@ -306,8 +355,10 @@ public class FibonacciHeap
        }
    }
    //gets 2 nodes that represent trees in the heap, with the same degree
-   public static void merge(HeapNode x, HeapNode y)
+   public static void merge(HeapNode x, HeapNode y) // I think rank is missing here
    {
+	   SumsLinks +=1;
+	   
        HeapNode small;
        HeapNode big;
        if ((x.getParent() != null)||(y.getParent()!= null)){System.out.println("kick back, you just merged by 2 nodes that aint been on the surface, B-I-A-T-C-H!");}
@@ -324,21 +375,23 @@ public class FibonacciHeap
        big.setParent(small);
        HeapNode brother_of_biggie = small.getChild();
        if(brother_of_biggie == null){small.setChild(big);}//in case small has no kids
-       if(brother_of_biggie.getNext() == brother_of_biggie)//in case  only 1 child
+       else if(brother_of_biggie.getNext() == brother_of_biggie)//in case  only 1 child
 	   {
 	   		brother_of_biggie.setNext(big);
 	   		brother_of_biggie.setPrev(big);
 	   		big.setNext(brother_of_biggie);
 	   		big.setPrev(brother_of_biggie);
        }
-
+       small.setRank(small.getRank()+1);
 
    }
    
    public void delete_root(HeapNode x) {
 	   
+	   size -= 1;
+
 	   HeapNode temp = x.getChild();
-	
+	   
 	   if (temp == null) {
 		   x.getPrev().setNext(x.getNext());
 		   x.getNext().setPrev(x.getPrev());
@@ -348,15 +401,101 @@ public class FibonacciHeap
 				temp.setParent(null);
 				temp = temp.getNext();
 		   		}
-		   temp.setParent(null);
-		   x.getPrev().setNext(x.getChild());	// make x.prev point to x child and then to x.next
-		   x.getNext().setPrev(x.getChild().getPrev());
-		   x.getChild().getPrev().setNext(x.getNext());
-		   x.getChild().setPrev(x.getPrev());
+		   if (x.getNext() == x) {
+			   last = temp;
+			   min = temp;
+		   }
+		   else {
+			   temp.setParent(null);
+			   x.getPrev().setNext(x.getChild());	// make x.prev point to x child and then to x.next
+			   x.getNext().setPrev(x.getChild().getPrev());
+			   x.getChild().getPrev().setNext(x.getNext());
+			   x.getChild().setPrev(x.getPrev());
+		   }
+		   
 	   }   
+	   if (x == last) {
+		   last = x.getPrev();
+	   }
+	   if (x == min) {
+		   min = null;
+		   min = actuallyFindMin();
+	   }
+	   consolidating();
+	   
+	   
    }
 
-    public static class HeapNode{
+   public void consolidating() {
+	  Map<Integer,HeapNode> map = new HashMap<Integer,HeapNode>();
+	  while (last.getNext() != last) {
+		  HeapNode temp = last.getNext();
+		  last.setNext(temp.getNext());
+		  temp.getNext().setPrev(last);
+		  temp.setNext(temp);
+		  temp.setPrev(temp);
+		  addDic(map,temp);
+	
+	  }
+	  addDic(map,last);
+	  last = null;
+	  int k =0;
+	  numTrees = map.size();
+	  
+	  while (map.size() != 0) {
+		  if (map.containsKey(k)) {
+			  if (last == null) {
+				  last = map.remove(k);
+			  }
+			  else {
+				  HeapNode temp = map.remove(k);
+				  last.getNext().setPrev(temp);
+				  temp.setNext(last.getNext());
+				  last.setNext(temp);
+				  temp.setPrev(last);
+				  last = temp;
+			  }
+		  }
+		   k += 1;
+	  }
+	  
+   }
+   
+   public void addDic(Map<Integer, HeapNode> map, HeapNode x) { // func to help Consolidating
+	   if (!map.containsKey(x.getRank())) {
+		   map.put(x.getRank(), x);
+	   }
+	   else {
+		   
+		   HeapNode temp = map.remove(x.getRank());
+		   if(temp.getParent()!=null) {System.out.println("Yo, this node got parents bro,don't treat it like that");}
+
+		   if (x.getKey() < temp.getKey()) {
+			   merge(x,temp);
+			   addDic(map,x);
+		   }
+		   else {
+			   merge(x,temp);
+			   addDic(map,temp);
+		   }
+		   
+	   }
+   }
+   
+   public void print_roots() {
+	   List<Integer> lst = new ArrayList<Integer>();
+	   for (HeapNode temp = last.getNext(); temp != last; temp = temp.getNext()) {
+		   lst.add(temp.getKey());
+	   }
+	   lst.add(last.getKey());
+	   System.out.println(Arrays.toString(lst.toArray()));
+
+	   
+   }
+   
+   
+   
+   public static class HeapNode{
 
     	public int key;
     	private boolean marked; //true iff i lost a boy( or girl, it's 2022 man(or woman(or tractor)))
