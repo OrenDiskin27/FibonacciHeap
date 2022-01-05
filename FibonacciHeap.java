@@ -18,7 +18,6 @@ public class FibonacciHeap
 	public static int SumsLinks;
 	public static int SumsCuts;
 	public int numTrees;
-	public int i; // delete this
 	
 	public FibonacciHeap(){}
 	
