@@ -12,16 +12,41 @@ public class Test {
 
     public static void main(String[] args) {
 
-        grade = 80.0;
-        testScore = grade / 29;
-
-        try {test0();} catch (Exception e){bugFound("test0");}
+//    	String test = "test0";
+//        fibonacciHeap = new FibonacciHeap();
+//
+//        ArrayList<Integer> numbers = new ArrayList<>();
+//
+//        for (int i = 0; i < 99999; i++) {
+//            numbers.add(i);
+//        }
+//
+//        Collections.shuffle(numbers);
+//
+//        for (int i = 0; i < 99999; i++) {
+//            fibonacciHeap.insert(numbers.get(i));
+//        }
+//
+//        for (int i = 0; i < 99999; i++) {
+//            if (fibonacciHeap.findMin().getKey() != i) {
+//            	System.out.println(i);
+//                bugFound(test);
+//                return;
+//            }
+//            fibonacciHeap.deleteMin();
+//        }
+//        System.out.println("test 0 ok");
+        
+        try {test0();} catch (Exception e){
+        	System.out.print(e);
+        	bugFound("test0");
+        	}
         try {test1();} catch (Exception e){bugFound("test1");}
         try {test2();} catch (Exception e){bugFound("test2");}
         try {test3();} catch (Exception e){bugFound("test3");}
         try {test4();} catch (Exception e){bugFound("test4");}
-   //     try {test5();} catch (Exception e){bugFound("test5");}
-   //     try {test6();} catch (Exception e){bugFound("test6");}
+        try {test5();} catch (Exception e){bugFound("test5");}
+        try {test6();} catch (Exception e){bugFound("test6");}
         try {test7();} catch (Exception e){bugFound("test7");}
         try {test8();} catch (Exception e){bugFound("test8");}
         try {test9();} catch (Exception e){bugFound("test9");}
@@ -31,6 +56,7 @@ public class Test {
         try {test13();} catch (Exception e){bugFound("test13");}
         try {test14();} catch (Exception e){bugFound("test14");}
         try {test15();} catch (Exception e){bugFound("test15");}
+
         try {test16();} catch (Exception e){
         	System.out.println(e);
         	bugFound("test16");
@@ -75,7 +101,6 @@ public class Test {
             }
             fibonacciHeap.deleteMin();
         }
-        System.out.println("test 0 ok");
 
     }
 
@@ -94,7 +119,6 @@ public class Test {
         }
         if (!fibonacciHeap.isEmpty())
             bugFound(test);
-        System.out.println("test 1 ok");
     }
 
     static void test2() {
@@ -112,7 +136,6 @@ public class Test {
         }
         if (!fibonacciHeap.isEmpty())
             bugFound(test);
-        System.out.println("test 2 ok");
     }
 
     static void test3() {
@@ -132,7 +155,6 @@ public class Test {
         }
         if (!fibonacciHeap.isEmpty())
             bugFound(test);
-        System.out.println(test + " ok");
 
     }
 
@@ -167,7 +189,6 @@ public class Test {
         }
         if (!fibonacciHeap.isEmpty())
             bugFound(test);
-        System.out.println(test + " ok");
 
     }
 
@@ -189,7 +210,6 @@ public class Test {
         }
         if (!fibonacciHeap.isEmpty())
             bugFound(test);
-        System.out.println(test + " ok");
     }
 
     static void test6() {
@@ -865,3 +885,4 @@ public class Test {
         }
     }
 }
+
